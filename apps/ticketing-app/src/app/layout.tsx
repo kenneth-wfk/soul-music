@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import { QueryProvider } from "@soulfest/ui-core";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -12,8 +13,7 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-
-export const metadata = {
+export const metadata: Metadata = {
   title: 'Soulfest Ticketing',
   description: 'Purchase your passes for the Kampar Heritage and Music Festival',
 }
@@ -29,10 +29,13 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="bg-[#f1f5f9] min-h-screen flex justify-center text-slate-900">
-        <div className="w-full max-w-[768px] bg-white min-h-[100dvh] relative shadow-2xl flex flex-col sm:border-x sm:border-slate-300 overflow-hidden">
-          {children}
-        </div>
+        <QueryProvider>
+          <div className="w-full max-w-[768px] bg-white min-h-[100dvh] relative shadow-2xl flex flex-col sm:border-x sm:border-slate-300 overflow-hidden">
+            {children}
+          </div>
+        </QueryProvider>
       </body>
     </html>
   );
 }
+

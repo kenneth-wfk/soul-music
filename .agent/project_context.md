@@ -7,7 +7,8 @@ Soulfest is a music festival platform encompassing a public site, a ticketing sy
 - **Monorepo**: Turborepo inside npm workspaces.
 - **Frontend Applications**: Next.js App Router for `public-site`, `ticketing-app`, and `admin-portal`.
 - **UI System**: `shadcn/ui` with Tailwind CSS, utilizing Framer Motion for highly-polished, premium glassmorphic animations and a "WOW" experience.
-- **Backend & DB**: Appwrite for authentication/DB, linked via a Node.js `api-server` or direct shared client.
+- **Backend & DB**: Appwrite for authentication/DB.
+- **API Strategy (Serverless First)**: Instead of relying on a running Express `api-server` daemon, core backend business logic (checkout handling, validation) is centralized in `packages/core-logic` and invoked securely by Next.js Server Route Handlers `api/...` residing in each app. The `api-server` package is currently KIV (Keep in View) for potential future heavy-WebSocket needs.
 - **Payments**: Initial support for manual bank slip uploads, to be transitioned to Stripe/eGHL later.
 
 ## Important Notes for AI Agents

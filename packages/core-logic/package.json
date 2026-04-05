@@ -7,8 +7,8 @@
     "lint": "eslint \"src/**/*.ts*\""
   },
   "dependencies": {
-    "appwrite": "^13.0.1",
-    "node-appwrite": "^11.1.0"
+    "appwrite": "^24.1.1",
+    "node-appwrite": "^23.1.0"
   },
   "devDependencies": {
     "typescript": "^5.3.3"

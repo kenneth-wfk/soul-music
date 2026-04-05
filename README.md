@@ -17,7 +17,7 @@ This repository uses **npm workspaces** and **Turborepo** to tightly integrate t
 - `@soulfest/ui-core`: The shared UI library built over **Tailwind CSS** and **shadcn/ui** and **Framer Motion**. It enforces a consistent vibrant and glassmorphic aesthetic. Contains:
   - `BottomNavigation` — Generic, prop-driven sticky bottom tab bar (used by `ticketing-app`).
   - `utils` — `cn()` helper for merging Tailwind classes.
-- `@soulfest/core-logic`: Shared business logic layer containing the initialized **Appwrite** API clients for database and authentication integration (pending live credentials).
+- `@soulfest/core-logic`: Shared business logic layer. This acts as our **Serverless Backend Hub**, encapsulating Appwrite Node integrations, database queries, and validation logic so that `ticketing-app` and `admin-portal` can securely invoke backend ops directly inside their Next.js routes. *(Note: The dedicated `api-server` workspace is currently marked as KIV for future websocket requirements, in favor of this highly efficient serverless pattern).*
 
 ---
 

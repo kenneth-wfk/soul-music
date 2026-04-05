@@ -1,0 +1,76 @@
+## Appwrite Collections
+
+0. CustomerProfiles (User Metadata)
+Links Appwrite Internal Auth to custom metadata and handles guest tracking.
+
+userId (String, Unique Index) - Directly matches Appwrite's internal Auth ID.
+email (String, Unique Index)
+fullName (String, Optional)
+phoneNumber (String, Optional)
+isGuest (Boolean, Required, Default: true)
+
+
+1. Newsfeed Collection
+Stores announcements and updates displayed on the public-site and managed via the admin-portal.
+
+postId (String, required): The ID of the news item (unique).
+title (String, required): Headline of the news item.
+content (String, required): Body text. markdown formatted.
+author (String, required): Name of the admin who posted it.
+publishedAt (Datetime, required): Date and time of publication.
+
+1a. Newsfeed Images
+Image gallery of a newsfeed, child collection of Newsfeed Collection.
+
+lineId (String, required): The Id of newsfeed image.
+postId (String, required): The Id of newsfeed this image belongs to. 
+imageUrl (String, optional): URL or File ID of an attached image.
+isCoverImage (Boolean, required): True if this image is the cover image of the newsfeed.
+
+
+2. Items Collection
+Defines the types of tickets available for purchase (e.g., VIP, General Admission) and their capacities.
+
+itemId (String, required): The ID of the item (unique).
+eventId (String, required): The ID of the festival event (supports future-proofing for multiple events).
+name (String, required): Item or Ticket name (e.g., "VIP Experience").
+description (String, optional): Details about what the tier includes.
+itemType (String, required): Type of item (e.g., "ticket", "merchandise").
+imageUrl (String, optional): URL or File ID of an attached image.
+price (Float/Double, required): The cost per ticket in RM.
+totalQty (Integer, required): Maximum number of tickets available for this ticket item, 0 for unlimited.
+remainingQty (Integer, required): Current available stock. Decremented upon order approval, 0 for unlimited.
+
+
+3. Orders Collection
+Tracks user checkout sessions and orders, specifically manual bank slip verification.
+
+orderId (String, required): The ID of the order (unique).
+orderNo (String, required): The order number (running number).
+orderDate (Datetime, required): Date and time of order.
+userId (String, required): The Appwrite Auth ID of the purchaser.
+totalQuantity (Integer, required): Total number of tickets or items purchased.
+totalAmount (Float/Double, required): Total price calculated at checkout.
+bankSlipFileId (String, optional): The ID of the uploaded receipt in Appwrite Storage.
+status (String, required): Enum/string representing state -> ['draft', 'pending_verification', 'approved', 'rejected', 'paid', 'cancelled'].
+
+3a. Order Items Collection
+Child collection of Orders Collection.
+
+orderItemId (String, required): The ID of the order item (unique).
+orderId (String, required): Relation to the parent Orders document.
+itemId (String, required): Relation to the parent Items document.
+quantity (Integer, required): Number of tickets or items purchased.
+price (Float/Double, required): The cost per ticket in RM.
+
+4. Tickets Collection (Generated upon Order Approval)
+Individual scannable tickets generated only after an admin approves the corresponding order.
+
+ticketId (String, required): The ID of the ticket (unique).
+ticketNo (String, required): The ticket number (running number).
+orderId (String, required): Relation to the parent Orders document.
+userId (String, required): The owner of the ticket.
+itemId (String, required): The type of ticket (system ID).
+itemName (String, required): The name of the ticket.
+qrCodeData (String, required): Unique secure string (or JWT) for physical scanning at the festival gates.
+isScanned (Boolean, required): Default false. Set to true when the attendee enters.
