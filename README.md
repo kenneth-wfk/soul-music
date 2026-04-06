@@ -106,6 +106,32 @@ npm start
 
 ---
 
+## 🚀 Deployment
+
+This monorepo is optimized for deployment on both **Appwrite** (Next.js SSR) and **Coolify** (Nixpacks).
+
+### ☁️ Appwrite (SSR Mode)
+
+Appwrite requires a "flattened" structure for Next.js SSR in monorepos. We use custom `deploy` scripts to handle this.
+
+| Setting | Value |
+| :--- | :--- |
+| **Root Directory** | `./` |
+| **Build Command** | `npm run deploy:public` (or `deploy:admin`, etc.) |
+| **Build Output** | `./.next/` |
+
+### 🛠️ Coolify (Nixpacks Mode)
+
+Coolify's Nixpacks builder handles monorepo structures natively.
+
+| Setting | Value |
+| :--- | :--- |
+| **Base Directory** | `apps/public-site` (or relevant app) |
+| **Build Command** | `npm run build:public` |
+| **Build Output** | *Leave Blank* |
+
+---
+
 ## 🤖 AI Agent Context
 
 Note: AI Coding Assistants should refer to `.agent/project_context.md` for persistent architectural specifications, aesthetic guidelines, and current development phase tracking.
