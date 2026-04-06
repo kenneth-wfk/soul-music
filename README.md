@@ -112,13 +112,13 @@ This monorepo is optimized for deployment on both **Appwrite** (Next.js SSR) and
 
 ### ☁️ Appwrite (SSR Mode)
 
-Appwrite requires a "flattened" structure for Next.js SSR in monorepos. We use custom `deploy` scripts to handle this.
+Appwrite Site natively supports Next.js with `output: 'standalone'` configured in `next.config.ts`. Combined with Turborepo, the following configuration is used:
 
 | Setting | Value |
 | :--- | :--- |
-| **Root Directory** | `./` |
-| **Build Command** | `npm run deploy:public` (or `deploy:admin`, etc.) |
-| **Build Output** | `./.next/` |
+| **Build Command** | `npm run build:public` (or `build:admin`, etc.) |
+| **Build Output** | `./apps/public-site/.next` (or relevant app path) |
+| **Node.js Runtime** | `18` or later |
 
 ### 🛠️ Coolify (Nixpacks Mode)
 
