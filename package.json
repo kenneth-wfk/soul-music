@@ -8,6 +8,11 @@
     "build:admin": "turbo build --filter=admin-portal",
     "build:ticketing": "turbo build --filter=ticketing-app",
     "build:api": "turbo build --filter=api-server",
+
+    "deploy:public": "npm run build:public && mkdir -p .next && cp apps/public-site/next.config.ts .",
+    "deploy:admin": "npm run build:admin && mkdir -p .next && cp apps/admin-portal/next.config.ts .",
+    "deploy:ticketing": "npm run build:ticketing && mkdir -p .next && cp apps/ticketing-app/next.config.ts .",
+    
     "dev": "turbo dev",
     "dev:public": "turbo dev --filter=public-site",
     "dev:admin": "turbo dev --filter=admin-portal",

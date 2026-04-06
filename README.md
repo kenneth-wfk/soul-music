@@ -17,7 +17,7 @@ This repository uses **npm workspaces** and **Turborepo** to tightly integrate t
 - `@soulfest/ui-core`: The shared UI library built over **Tailwind CSS** and **shadcn/ui** and **Framer Motion**. It enforces a consistent vibrant and glassmorphic aesthetic. Contains:
   - `BottomNavigation` — Generic, prop-driven sticky bottom tab bar (used by `ticketing-app`).
   - `utils` — `cn()` helper for merging Tailwind classes.
-- `@soulfest/core-logic`: Shared business logic layer. This acts as our **Serverless Backend Hub**, encapsulating Appwrite Node integrations, database queries, and validation logic so that `ticketing-app` and `admin-portal` can securely invoke backend ops directly inside their Next.js routes. *(Note: The dedicated `api-server` workspace is currently marked as KIV for future websocket requirements, in favor of this highly efficient serverless pattern).*
+- `@soulfest/core-logic`: Shared business logic layer. This acts as our **Serverless Backend Hub**, encapsulating Appwrite Node integrations, database queries, and validation logic so that `ticketing-app` and `admin-portal` can securely invoke backend ops directly inside their Next.js routes. _(Note: The dedicated `api-server` workspace is currently marked as KIV for future websocket requirements, in favor of this highly efficient serverless pattern)._
 
 ---
 
@@ -114,21 +114,21 @@ This monorepo is optimized for deployment on both **Appwrite** (Next.js SSR) and
 
 Appwrite Site natively supports Next.js with `output: 'standalone'` configured in `next.config.ts`. Combined with Turborepo, the following configuration is used:
 
-| Setting | Value |
-| :--- | :--- |
-| **Build Command** | `npm run build:public` (or `build:admin`, etc.) |
-| **Build Output** | `./apps/public-site/.next` (or relevant app path) |
-| **Node.js Runtime** | `18` or later |
+| Setting             | Value                                             |
+| :------------------ | :------------------------------------------------ |
+| **Build Command**   | `npm run deploy:public` (or `deploy:admin`, etc.) |
+| **Build Output**    | `./apps/public-site/.next` (or relevant app path) |
+| **Node.js Runtime** | `18` or later                                     |
 
 ### 🛠️ Coolify (Nixpacks Mode)
 
 Coolify's Nixpacks builder handles monorepo structures natively.
 
-| Setting | Value |
-| :--- | :--- |
+| Setting            | Value                                |
+| :----------------- | :----------------------------------- |
 | **Base Directory** | `apps/public-site` (or relevant app) |
-| **Build Command** | `npm run build:public` |
-| **Build Output** | *Leave Blank* |
+| **Build Command**  | `npm run build:public`               |
+| **Build Output**   | _Leave Blank_                        |
 
 ---
 
