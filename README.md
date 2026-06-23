@@ -7,13 +7,12 @@ The content after this line will need revision and update.
 
 ## 🏗️ Monorepo Structure
 
-This repository uses **npm workspaces** and **Turborepo** to tightly integrate the frontend applications and shared logic.
+This repository uses **pnpm workspaces** and **Turborepo** to tightly integrate the frontend applications and shared logic.
 
 ### Applications (`apps/`)
 
-- `public-site`: The main Next.js App Router website for festival news and marketing.
-- `ticketing-app`: The Next.js App Router application handling the performance ticket purchasing flow and checkout.
-- `admin-portal`: The Next.js App Router dashboard for staff to manage newsfeed content, ticketing inventory, and verify bank slip uploads.
+- `soul-music-main`: The music school landing page.
+- `2020-kham-info`: The music and art festival landing page for teasing upcoming events.
 
 ### Shared Packages (`packages/`)
 
@@ -26,14 +25,14 @@ This repository uses **npm workspaces** and **Turborepo** to tightly integrate t
 
 ## 🚀 Getting Started
 
-Ensure you have [Node.js](https://nodejs.org/) (v18+) and standard `npm` installed.
+Ensure you have [Node.js](https://nodejs.org/) (v18+) and `pnpm` installed.
 
 ### 1. Install Dependencies
 
 From the root directory, simply run:
 
 ```bash
-npm install
+pnpm install
 ```
 
 This will automatically traverse the workspaces and install all required modules for the apps and shared packages.
@@ -53,28 +52,19 @@ Then, update `.env.local` with your Appwrite API credentials so the system can c
 You can spin up all applications simultaneously with Turborepo:
 
 ```bash
-npm run dev
+pnpm run dev
 ```
 
-By default, Turborepo will start:
-
-- `api-server` on `http://localhost:4000`
-- `public-site` on `http://localhost:4001`
-- `ticketing-app` on `http://localhost:4002`
-- `admin-portal` on `http://localhost:4003`
+By default, Turborepo will start both applications.
 
 #### Running a Single App
 
-To run just one application, you can use the predefined npm scripts:
+To run just one application, you can use the predefined pnpm scripts:
 
 ```bash
-npm run dev:public
+pnpm run dev:soul-music-main
 # or
-npm run dev:admin
-# or
-npm run dev:ticketing
-# or
-npm run dev:api
+pnpm run dev:2020-kham-info
 ```
 
 ---
@@ -84,28 +74,20 @@ npm run dev:api
 To build all apps and packages for production:
 
 ```bash
-npm run build
+pnpm run build
 ```
 
 #### Building a Single App
 
-To build just one application, use the predefined npm scripts:
+To build just one application, use the predefined pnpm scripts:
 
 ```bash
-npm run build:public
+pnpm run build:soul-music-main
 # or
-npm run build:admin
-# or
-npm run build:ticketing
+pnpm run build:2020-kham-info
 ```
 
 Turborepo intelligently caches the builds, meaning if a specific app hasn't been changed, it will serve the build from cache instantly.
-
-To run the production build locally:
-
-```bash
-npm start
-```
 
 ---
 
@@ -119,8 +101,8 @@ Appwrite Site natively supports Next.js with `output: 'standalone'` configured i
 
 | Setting             | Value                                             |
 | :------------------ | :------------------------------------------------ |
-| **Build Command**   | `npm run deploy:public` (or `deploy:admin`, etc.) |
-| **Build Output**    | `./apps/public-site/.next` (or relevant app path) |
+| **Build Command**   | `pnpm run build` (or relevant build command)      |
+| **Build Output**    | `./apps/soul-music-main/.next` (or relevant app path) |
 | **Node.js Runtime** | `18` or later                                     |
 
 ### 🛠️ Coolify (Nixpacks Mode)
@@ -129,8 +111,8 @@ Coolify's Nixpacks builder handles monorepo structures natively.
 
 | Setting            | Value                                |
 | :----------------- | :----------------------------------- |
-| **Base Directory** | `apps/public-site` (or relevant app) |
-| **Build Command**  | `npm run build:public`               |
+| **Base Directory** | `apps/soul-music-main` (or relevant app) |
+| **Build Command**  | `pnpm run build:soul-music-main`     |
 | **Build Output**   | _Leave Blank_                        |
 
 ---
