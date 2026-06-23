@@ -38,58 +38,69 @@ export async function POST(req: Request, { params }: { params: Promise<{ orderNo
     ]);
 
     if (action === 'approve') {
-      // Mark as paid
-      await databases.updateDocument(DB_ID, 'orders', order.$id, {
-        status: 'paid',
-        remarks: 'Approved by admin'
-      });
-
-      // Generate Tickets
-      for (const orderItem of orderItemsRes.documents) {
-        for (let i = 0; i < orderItem.quantity; i++) {
-            const ticketNo = 'TIC-' + Math.random().toString(36).substr(2, 9).toUpperCase();
-            await databases.createDocument(DB_ID, 'tickets', ID.unique(), {
-                ticketId: ID.unique(),
-                orderItemId: orderItem.orderItemId,
-                userId: order.userId,
-                ticketNo: ticketNo,
-                qrCodeData: `https://verify.soulfest.com/?t=${ticketNo}`, // simple deterministic URL
-                isScanned: false
-            });
-        }
-      }
-
-      return NextResponse.json({ success: true, message: 'Order approved and tickets generated.' });
+      return await handleApprove(databases, DB_ID, order, orderItemsRes);
     } 
     else if (action === 'reject') {
-      // Mark as cancelled
-      await databases.updateDocument(DB_ID, 'orders', order.$id, {
-        status: 'cancelled',
-        remarks: 'Bank slip rejected by admin',
-        cancelledAt: new Date().toISOString()
-      });
-
-      // Restore Inventory Quantities
-      for (const orderItem of orderItemsRes.documents) {
-         // fetch current item
-         const itemRes = await databases.listDocuments(DB_ID, 'items', [
-             Query.equal('itemId', orderItem.itemId)
-         ]);
-         if (itemRes.total > 0) {
-             const actualItem = itemRes.documents[0];
-             await databases.updateDocument(DB_ID, 'items', actualItem.$id, {
-                 remainingQty: actualItem.remainingQty + orderItem.quantity
-             });
-         }
-      }
-
-      return NextResponse.json({ success: true, message: 'Order rejected and inventory restored.' });
+      return await handleReject(databases, DB_ID, order, orderItemsRes);
     }
 
     return NextResponse.json({ error: 'Invalid action' }, { status: 400 });
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (error: any) {
     console.error('Process order error:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function handleApprove(databases: any, DB_ID: string, order: any, orderItemsRes: any) {
+  // Mark as paid
+  await databases.updateDocument(DB_ID, 'orders', order.$id, {
+    status: 'paid',
+    remarks: 'Approved by admin'
+  });
+
+  // Generate Tickets
+  for (const orderItem of orderItemsRes.documents) {
+    for (let i = 0; i < orderItem.quantity; i++) {
+        const ticketNo = 'TIC-' + Math.random().toString(36).substr(2, 9).toUpperCase();
+        await databases.createDocument(DB_ID, 'tickets', ID.unique(), {
+            ticketId: ID.unique(),
+            orderItemId: orderItem.orderItemId,
+            userId: order.userId,
+            ticketNo: ticketNo,
+            qrCodeData: `https://verify.soulfest.com/?t=${ticketNo}`, // simple deterministic URL
+            isScanned: false
+        });
+    }
+  }
+
+  return NextResponse.json({ success: true, message: 'Order approved and tickets generated.' });
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function handleReject(databases: any, DB_ID: string, order: any, orderItemsRes: any) {
+  // Mark as cancelled
+  await databases.updateDocument(DB_ID, 'orders', order.$id, {
+    status: 'cancelled',
+    remarks: 'Bank slip rejected by admin',
+    cancelledAt: new Date().toISOString()
+  });
+
+  // Restore Inventory Quantities
+  for (const orderItem of orderItemsRes.documents) {
+     // fetch current item
+     const itemRes = await databases.listDocuments(DB_ID, 'items', [
+         Query.equal('itemId', orderItem.itemId)
+     ]);
+     if (itemRes.total > 0) {
+         const actualItem = itemRes.documents[0];
+         await databases.updateDocument(DB_ID, 'items', actualItem.$id, {
+             remainingQty: actualItem.remainingQty + orderItem.quantity
+         });
+     }
+  }
+
+  return NextResponse.json({ success: true, message: 'Order rejected and inventory restored.' });
 }
