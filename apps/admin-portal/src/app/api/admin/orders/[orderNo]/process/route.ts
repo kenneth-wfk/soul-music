@@ -45,19 +45,21 @@ export async function POST(req: Request, { params }: { params: Promise<{ orderNo
       });
 
       // Generate Tickets
+      const ticketPromises = [];
       for (const orderItem of orderItemsRes.documents) {
         for (let i = 0; i < orderItem.quantity; i++) {
             const ticketNo = 'TIC-' + Math.random().toString(36).substr(2, 9).toUpperCase();
-            await databases.createDocument(DB_ID, 'tickets', ID.unique(), {
+            ticketPromises.push(databases.createDocument(DB_ID, 'tickets', ID.unique(), {
                 ticketId: ID.unique(),
                 orderItemId: orderItem.orderItemId,
                 userId: order.userId,
                 ticketNo: ticketNo,
                 qrCodeData: `https://verify.soulfest.com/?t=${ticketNo}`, // simple deterministic URL
                 isScanned: false
-            });
+            }));
         }
       }
+      await Promise.all(ticketPromises);
 
       return NextResponse.json({ success: true, message: 'Order approved and tickets generated.' });
     } 
@@ -70,17 +72,27 @@ export async function POST(req: Request, { params }: { params: Promise<{ orderNo
       });
 
       // Restore Inventory Quantities
-      for (const orderItem of orderItemsRes.documents) {
-         // fetch current item
-         const itemRes = await databases.listDocuments(DB_ID, 'items', [
-             Query.equal('itemId', orderItem.itemId)
-         ]);
-         if (itemRes.total > 0) {
-             const actualItem = itemRes.documents[0];
-             await databases.updateDocument(DB_ID, 'items', actualItem.$id, {
-                 remainingQty: actualItem.remainingQty + orderItem.quantity
-             });
-         }
+      const itemIds = orderItemsRes.documents.map((doc: any) => doc.itemId);
+      const uniqueItemIds = Array.from(new Set(itemIds));
+
+      if (uniqueItemIds.length > 0) {
+          const itemsRes = await databases.listDocuments(DB_ID, 'items', [
+              Query.equal('itemId', uniqueItemIds)
+          ]);
+
+          const itemsMap = new Map(itemsRes.documents.map((doc: any) => [doc.itemId, doc]));
+
+          const restorePromises = orderItemsRes.documents.map((orderItem: any) => {
+              const actualItem = itemsMap.get(orderItem.itemId);
+              if (actualItem) {
+                  return databases.updateDocument(DB_ID, 'items', actualItem.$id, {
+                      remainingQty: actualItem.remainingQty + orderItem.quantity
+                  });
+              }
+              return Promise.resolve();
+          });
+
+          await Promise.all(restorePromises);
       }
 
       return NextResponse.json({ success: true, message: 'Order rejected and inventory restored.' });
