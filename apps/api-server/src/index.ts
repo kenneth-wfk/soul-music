@@ -3,8 +3,6 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
-// We import our shared core logic (Appwrite clients) here once configured
-// import { createAdminClient } from '@soulfest/core-logic';
 
 dotenv.config({ path: '../../.env.local' });
 
