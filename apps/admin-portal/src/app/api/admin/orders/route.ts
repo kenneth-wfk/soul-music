@@ -21,16 +21,32 @@ export async function GET() {
     ]);
 
     // Also fetch users to attach Customer Names (optional optimization, Appwrite doesn't do SQL JOINs natively)
-    // For now we map orders up. If CustomerProfiles is needed, we map them.
-    const ordersWithProfiles = await Promise.all(pendingOrdersRes.documents.map(async (order: any) => {
-       const profiles = await databases.listDocuments(DB_ID, 'customer_profiles', [
-           Query.equal('userId', order.userId)
-       ]);
+    // Optimized: Fetch all necessary customer profiles in a single query
+    const uniqueUserIds = Array.from(new Set(pendingOrdersRes.documents.map((o: any) => o.userId)));
+
+    const profileMap: Record<string, any> = {};
+    if (uniqueUserIds.length > 0) {
+      // Process in chunks of 100 to avoid any potential Appwrite query limit
+      const chunkSize = 100;
+      for (let i = 0; i < uniqueUserIds.length; i += chunkSize) {
+        const chunk = uniqueUserIds.slice(i, i + chunkSize);
+        const profilesRes = await databases.listDocuments(DB_ID, 'customer_profiles', [
+            Query.equal('userId', chunk),
+            Query.limit(chunkSize)
+        ]);
+        for (const profile of profilesRes.documents) {
+            profileMap[profile.userId] = profile;
+        }
+      }
+    }
+
+    const ordersWithProfiles = pendingOrdersRes.documents.map((order: any) => {
+       const profile = profileMap[order.userId];
        return {
            ...order,
-           customerName: profiles.total > 0 ? profiles.documents[0].fullName || profiles.documents[0].email : 'Unknown Profile'
+           customerName: profile ? (profile.fullName || profile.email) : 'Unknown Profile'
        }
-    }));
+    });
 
     // Fetch generic metrics (Sales, Tickets Sold)
     const allOrders = await databases.listDocuments(DB_ID, 'orders', [
