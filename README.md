@@ -1,6 +1,9 @@
-# Soulfest App
+# Soul Performing Music - Apps Solutions
 
-Soulfest is a custom-built, comprehensive music festival platform structured as a modern turborepo monorepo. It manages the public-facing information portal, the secure ticketing and sales system, and the dedicated admin portal for content and inventory management.
+This is a modern monorepo apps solution for Soul Performing Music. The solutions cover for Soul Performing Music School, as well as special events such as Soulfest etc. It contains public-facing information portal, music school management system, event ticketing system, event public-facing portal and related admin portal as needed
+
+The content after this line will need revision and update.
+
 
 ## 🏗️ Monorepo Structure
 
