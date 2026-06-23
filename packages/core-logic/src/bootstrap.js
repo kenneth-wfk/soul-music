@@ -145,6 +145,28 @@ const BUCKETS = [
     { id: 'newsGallery', name: 'NewsGallery' }
 ];
 
+
+function handleAppwriteError(e, entityType, entityName, parentName = null, throwError = false) {
+    if (e.code === 409 || e.code === 400 || (e.message && e.message.includes('already exists'))) {
+        if (parentName) {
+            console.log(`  - ${entityType} '${entityName}' already exists in ${parentName}.`);
+        } else {
+            console.log(`- ${entityType} '${entityName}' already exists.`);
+        }
+    } else {
+        if (throwError) {
+            console.error(e);
+            throw e;
+        } else {
+            if (parentName) {
+                console.error(`! Failed to create ${entityType.toLowerCase()} '${entityName}' in ${parentName}: [${e.code}] ${e.message}`);
+            } else {
+                console.error(`! Failed to create ${entityType.toLowerCase()} '${entityName}': [${e.code}] ${e.message}`);
+            }
+        }
+    }
+}
+
 async function createAttribute(dbId, collId, attr) {
     try {
         if (attr.type === 'string') {
@@ -160,11 +182,7 @@ async function createAttribute(dbId, collId, attr) {
         }
         console.log(`✓ Attribute '${attr.key}' created for ${collId}.`);
     } catch (e) {
-        if (e.code === 409 || e.code === 400 || (e.message && e.message.includes('already exists'))) {
-            console.log(`  - Attribute '${attr.key}' already exists in ${collId}.`);
-        } else {
-            console.error(`! Failed to create attribute '${attr.key}' in ${collId}: [${e.code}] ${e.message}`);
-        }
+        handleAppwriteError(e, 'Attribute', attr.key, collId, false);
     }
 }
 
@@ -173,11 +191,7 @@ async function createIndex(dbId, collId, index) {
         await databases.createIndex(dbId, collId, index.key, index.type, index.attributes);
         console.log(`✓ Index '${index.key}' created for ${collId}.`);
     } catch (e) {
-        if (e.code === 409 || e.code === 400 || (e.message && e.message.includes('already exists'))) {
-            console.log(`  - Index '${index.key}' already exists in ${collId}.`);
-        } else {
-            console.error(`! Failed to create index '${index.key}' in ${collId}: [${e.code}] ${e.message}`);
-        }
+        handleAppwriteError(e, 'Index', index.key, collId, false);
     }
 }
 
@@ -213,12 +227,7 @@ async function bootstrap() {
             await databases.createCollection(DB_ID, coll.id, coll.name, permissions);
             console.log(`✓ Collection '${coll.id}' created.`);
         } catch (e) {
-            if (e.code === 409 || e.code === 400 || (e.message && e.message.includes('already exists'))) {
-                console.log(`- Collection '${coll.id}' already exists.`);
-            } else {
-                console.error(e);
-                throw e;
-            }
+            handleAppwriteError(e, 'Collection', coll.id, null, true);
         }
 
         // Wait a little bit for collection creation to settle (Appwrite async worker)
@@ -250,12 +259,7 @@ async function bootstrap() {
             await storage.createBucket(bucket.id, bucket.name, permissions, false, false, undefined, ['pdf', 'png', 'jpg', 'jpeg']);
             console.log(`✓ Bucket '${bucket.id}' created.`);
         } catch (e) {
-            if (e.code === 409 || e.code === 400 || (e.message && e.message.includes('already exists'))) {
-                console.log(`- Bucket '${bucket.id}' already exists.`);
-            } else {
-                console.error(e);
-                throw e;
-            }
+            handleAppwriteError(e, 'Bucket', bucket.id, null, true);
         }
     }
 
