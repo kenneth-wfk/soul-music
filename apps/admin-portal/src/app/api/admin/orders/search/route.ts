@@ -38,31 +38,45 @@ export async function GET(req: Request) {
 
     const allOrdersRes = await databases.listDocuments(DB_ID, 'orders', queries);
 
-    // Fetch and merge customer info
-    let enrichedOrders = await Promise.all(allOrdersRes.documents.map(async (order: any) => {
-        try {
-            const profiles = await databases.listDocuments(DB_ID, 'customer_profiles', [
-                Query.equal('userId', order.userId)
-            ]);
-            return {
-                ...order,
-                customerName: profiles.total > 0 ? (profiles.documents[0].fullName || profiles.documents[0].email) : 'Unknown User',
-                customerEmail: profiles.total > 0 ? profiles.documents[0].email : ''
-            };
-        } catch {
-            return {
-                ...order,
-                customerName: 'Unknown User',
-                customerEmail: ''
-            }
+    // Fetch and merge customer info - Optimized to prevent N+1 queries
+    const uniqueUserIds = Array.from(new Set(allOrdersRes.documents.map(o => o.userId).filter(Boolean)));
+    const profileMap: Record<string, { fullName?: string, email?: string }> = {};
+
+    if (uniqueUserIds.length > 0) {
+      try {
+        // Appwrite limit for queries is generally 100, so we chunk just in case
+        const chunkSize = 100;
+        for (let i = 0; i < uniqueUserIds.length; i += chunkSize) {
+          const chunk = uniqueUserIds.slice(i, i + chunkSize);
+          const profilesRes = await databases.listDocuments(DB_ID, 'customer_profiles', [
+            Query.equal('userId', chunk),
+            Query.limit(chunkSize)
+          ]);
+
+          profilesRes.documents.forEach((profile) => {
+            profileMap[profile.userId as string] = profile as { fullName?: string, email?: string };
+          });
         }
-    }));
+      } catch (error) {
+        console.error('Error fetching batch customer profiles:', error);
+      }
+    }
+
+    let enrichedOrders = allOrdersRes.documents.map((order) => {
+      const profile = profileMap[order.userId as string];
+
+      return {
+        ...order,
+        customerName: profile ? (profile.fullName || profile.email) : 'Unknown User',
+        customerEmail: profile ? profile.email : ''
+      };
+    });
 
     // Post-merge filters
     if (filterCustomer) {
         enrichedOrders = enrichedOrders.filter(o => 
-             o.customerName.toLowerCase() === filterCustomer.toLowerCase() || 
-             o.customerEmail.toLowerCase() === filterCustomer.toLowerCase()
+             (o.customerName as string).toLowerCase() === filterCustomer.toLowerCase() ||
+             (o.customerEmail as string).toLowerCase() === filterCustomer.toLowerCase()
         );
     }
 
@@ -71,8 +85,8 @@ export async function GET(req: Request) {
         orders: enrichedOrders 
     });
 
-  } catch (error: any) {
+  } catch (error) {
     console.error('Order search error:', error);
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return NextResponse.json({ error: (error as Error).message }, { status: 500 });
   }
 }
