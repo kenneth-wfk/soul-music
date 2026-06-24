@@ -6,9 +6,11 @@
     "build": "turbo build",
     "build:soul-music-main": "turbo build --filter=soul-music-main",
     "build:2020-kham-info": "turbo build --filter=2020-kham-info",
+    "build:2026-kham-info": "turbo build --filter=2026-kham-info",
     "dev": "turbo dev",
     "dev:soul-music-main": "turbo dev --filter=soul-music-main",
     "dev:2020-kham-info": "turbo dev --filter=2020-kham-info",
+    "dev:2026-kham-info": "turbo dev --filter=2026-kham-info",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },
   "devDependencies": {
