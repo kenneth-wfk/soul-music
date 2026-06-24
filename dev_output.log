@@ -1,0 +1,28 @@
+
+> soulfest-monorepo@0.0.0 dev:2026-kham-info
+> turbo dev --filter=2026-kham-info
+
+• turbo 2.9.18
+
+   • Packages in scope: 2026-kham-info
+   • Running dev in 1 packages
+   • Remote caching disabled
+
+2026-kham-info:dev: cache bypass, force executing d230e5fef245aced
+2026-kham-info:dev:
+2026-kham-info:dev: > 2026-kham-info@0.1.0 dev /app/apps/2026-kham-info
+2026-kham-info:dev: > next dev
+2026-kham-info:dev:
+2026-kham-info:dev: ▲ Next.js 16.2.9 (Turbopack)
+2026-kham-info:dev: - Local:         http://localhost:3000
+2026-kham-info:dev: - Network:       http://192.168.0.2:3000
+2026-kham-info:dev: ✓ Ready in 593ms
+2026-kham-info:dev: ⚠ Warning: Next.js inferred your workspace root, but it may not be correct.
+2026-kham-info:dev:  We detected multiple lockfiles and selected the directory of /app/pnpm-workspace.yaml as the root directory.
+2026-kham-info:dev:  To silence this warning, set `turbopack.root` in your Next.js config, or consider removing one of the lockfiles if it's not needed.
+2026-kham-info:dev:    See https://nextjs.org/docs/app/api-reference/config/next-config-js/turbopack#root-directory for more information.
+2026-kham-info:dev:  Detected additional lockfiles:
+2026-kham-info:dev:    * /app/apps/2026-kham-info/pnpm-workspace.yaml
+2026-kham-info:dev:
+2026-kham-info:dev:
+2026-kham-info:dev:  GET / 200 in 3.5s (next.js: 3.1s, application-code: 415ms)
